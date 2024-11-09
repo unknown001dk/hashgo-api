@@ -10,22 +10,22 @@ const app = express();
 
 app.use(express.json());
 const corsOptions = {
-  origin: 'https://hashgo-no-name-technology.vercel.app',
+  origin: 'https://hashgo.vercel.app/',
   optionsSuccessStatus: 200 // For legacy browser support
 };
 
+// Use CORS for all routes
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));  // Explicitly handle preflight requests
 
 // routes
 app.use('/api/v1/users', userRoutes);
 
 app.get('/', (req, res) => {
-
   res.status(200).send('API is running...');
 });
 
-// start the server
-
+// Start the server
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
