@@ -9,9 +9,12 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
-app.use(cors({
-  origin: '*'
-}));
+const corsOptions = {
+  origin: 'https://hashgo-no-name-technology.vercel.app',
+  optionsSuccessStatus: 200 // For legacy browser support
+};
+
+app.use(cors(corsOptions));
 
 // routes
 app.use('/api/v1/users', userRoutes);
