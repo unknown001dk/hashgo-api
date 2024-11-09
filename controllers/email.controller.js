@@ -50,45 +50,47 @@ class EmailService {
       console.log("Email sent successfully to " + to);
     } catch (error) {
       console.error("Error sending email: ", error);
+      throw error;  // Re-throw error to handle in controller
     }
   }
 
   async sendUserRegistrationMail(email, name) {
-    const intro = 'Thank you for registering with us. We are thrilled to welcome you as a valued member of our community. Your registration was successful, and you are now part of a dynamic platform dedicated to excellence and innovation. As a member, you will have access to exclusive resources, insightful content, and a network of like-minded individuals. We are committed to providing you with the best experience possible and look forward to supporting you in your journey with us.';
-    const outro = 'If you have any questions or need assistance, please do not hesitate to reach out to our support team.';
-    
+    const intro = 'Thank you for registering with us...';
+    const outro = 'If you have any questions or need assistance, please reach out.';
     const htmlContent = this.generateMailContent(name, intro, outro);
     await this.sendMail(email, 'Welcome to #GO Academy', htmlContent);
   }
 
   async sendCourseRegistrationMail(email, name) {
-    const intro = 'Thank you for registering for our courses. We are delighted to welcome you to our esteemed community of learners and professionals. Your registration has been successfully completed, and you are now a valued member of our platform. We are committed to providing you with a rich learning experience and the support you need to achieve your educational and career goals.';
-    const outro = 'If you have any questions or need assistance, please do not hesitate to reach out to our support team. We look forward to your active participation and wish you great success in your learning journey with us.';
-    
+    const intro = 'Thank you for registering for our courses...';
+    const outro = 'We look forward to your success in your learning journey with us.';
     const htmlContent = this.generateMailContent(name, intro, outro);
     await this.sendMail(email, 'Welcome to #GO Academy', htmlContent);
   }
 
   async sendScheduledEmailToAllUsers() {
     const userInfo = await User.find({});
-    for (let data of userInfo) {
+    const emailPromises = userInfo.map((data) => {
       const name = data.name;
       const email = data.email;
 
-      const intro = 'This is a reminder that our online class is scheduled to begin at 10:30 AM tonight. Please ensure you are prepared and logged in a few minutes before the start time to avoid any delays.';
+      const intro = 'This is a reminder that our online class is scheduled to begin...';
       const action = {
-        instructions: 'To join the class, please click the button to join the class',
+        instructions: 'To join the class, please click the button below.',
         button: {
           color: '#22BC66',
           text: 'Join Now',
           link: 'https://meet.google.com/rhm-jedy-frc',
         },
       };
-      const outro = 'Need help, or have questions? Just reply to this email, we\'d love to help.';
-
+      const outro = 'Need help, or have questions? Just reply to this email.';
       const htmlContent = this.generateMailContent(name, intro, outro, action);
-      await this.sendMail(email, 'Welcome to #GO Academy', htmlContent);
-    }
+
+      return this.sendMail(email, 'Class Reminder', htmlContent);
+    });
+
+    // Wait for all email-sending promises to resolve
+    await Promise.all(emailPromises);
   }
 }
 
@@ -96,19 +98,34 @@ class EmailService {
 export const UserRegmail = async (req, res) => {
   const { email, name } = req.body;
   const emailService = new EmailService();
-  await emailService.sendUserRegistrationMail(email, name);
-  return res.status(201).send('User registration email sent');
+
+  try {
+    await emailService.sendUserRegistrationMail(email, name);
+    console.log('Email sent successfully');
+  } catch (error) {
+    console.log(error)
+  }
 };
 
 export const CourseRegmail = async (req, res) => {
   const { email, name } = req.body;
   const emailService = new EmailService();
-  await emailService.sendCourseRegistrationMail(email, name);
-  return res.status(201).send('Course registration email sent');
+
+  try {
+    await emailService.sendCourseRegistrationMail(email, name);
+    return res.status(201).send('Course registration email sent');
+  } catch (error) {
+    return res.status(500).send('Error sending course registration email');
+  }
 };
 
 export const scheduleEmail = async (req, res) => {
   const emailService = new EmailService();
-  await emailService.sendScheduledEmailToAllUsers();
-  return res.status(200).send('Scheduled emails sent to all users');
+
+  try {
+    await emailService.sendScheduledEmailToAllUsers();
+    return res.status(200).send('Scheduled emails sent to all users');
+  } catch (error) {
+    return res.status(500).send('Error sending scheduled emails');
+  }
 };

@@ -30,8 +30,8 @@ export const userRegister = async (req, res) => {
 
     // Create new user
     const newUser = new User({ name, email, phoneNumber, course });
-    await UserRegmail(req, res);
     await newUser.save();
+    await UserRegmail(req, res);
     return res.status(201).json({
       message: "User registration successful",
     });
