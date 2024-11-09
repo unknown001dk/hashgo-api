@@ -11,6 +11,8 @@ const app = express();
 app.use(express.json());
 const corsOptions = {
   origin: 'https://hashgo.vercel.app/',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow these headers
   optionsSuccessStatus: 200 // For legacy browser support
 };
 
