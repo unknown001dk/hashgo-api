@@ -10,14 +10,31 @@ const app = express();
 
 // Middleware to parse JSON
 app.use(express.json());
+
+// Dynamic CORS Configuration
+const allowedOrigins = ['https://hashgo.vercel.app', 'https://hashgo-react.vercel.app']; // Add more allowed origins as needed
 app.use(
   cors({
-    origin: 'https://hashgo.vercel.app', // Replace with your frontend domain
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed HTTP methods
-    credentials: true, // If you're using cookies or other credentials
+    credentials: true, // Allow cookies or other credentials
+    allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
   })
 );
-app.options('*', cors());
+
+// Explicitly handle preflight requests
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.sendStatus(200);
+});
 
 // Routes
 app.use('/api/v1/users', userRoutes);
