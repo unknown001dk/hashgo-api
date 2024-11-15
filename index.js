@@ -36,6 +36,11 @@ app.options('*', (req, res) => {
   res.sendStatus(200);
 });
 
+app.use((req, res, next) => {
+  console.log(`Request Origin: ${req.headers.origin}`);
+  next();
+});
+
 // Routes
 app.use('/api/v1/users', userRoutes);
 
