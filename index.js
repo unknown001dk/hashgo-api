@@ -17,6 +17,7 @@ app.use(
     credentials: true, // If you're using cookies or other credentials
   })
 );
+app.options('*', cors());
 
 // Routes
 app.use('/api/v1/users', userRoutes);
