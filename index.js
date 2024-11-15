@@ -41,6 +41,14 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  res.setTimeout(15000, () => {
+    logger.error(`Request timed out: ${req.method} ${req.originalUrl}`);
+    return res.status(504).json({ message: "Request Timeout" });
+  });
+  next();
+});
+
 // Routes
 app.use('/api/v1/users', userRoutes);
 
