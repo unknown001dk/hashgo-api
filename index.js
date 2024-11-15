@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: 'https://hashgo-react.vercel.app', // Replace with your frontend domain
+    origin: 'https://hashgo.vercel.app', // Replace with your frontend domain
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed HTTP methods
     credentials: true, // If you're using cookies or other credentials
   })
