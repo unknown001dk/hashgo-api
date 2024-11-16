@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 
 // Dynamic CORS Configuration
-const allowedOrigins = ['https://hashgo.vercel.app', 'https://hashgo-react.vercel.app', https://hashgo.onrender.com]; // Add more allowed origins as needed
+const allowedOrigins = ['https://hashgo.vercel.app', 'https://hashgo-react.vercel.app', 'https://hashgo.onrender.com']; // Add more allowed origins as needed
 app.use(
   cors({
     origin: (origin, callback) => {
